@@ -90,15 +90,7 @@ with tf.variable_scope('scope1', reuse=tf.AUTO_REUSE):
 
     gStep = tf.Variable(tf.constant(0))
     learning_rate = tf.train.exponential_decay(float(0.01), gStep, 1000, 0.97, staircase=True)
-
-    train_op_list = []
-    for i in range(num_clusters):
-        opt1 = tf.train.AdamOptimizer(learning_rate) # tf.gather_nd(adjusts, [i])*tf.gather_nd(adjustments, [i])*tf.gather_nd(distances_norm, [i])*
-        grads1 = opt1.compute_gradients(vladLoss, [weights_list[i],biases_list[i]])
-        train_op1 = opt1.apply_gradients(grads1)
-        train_op_list.append(train_op1)
-    train_op = tf.group(train_op_list)
-
+    train_op = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(vladLoss)
 
 
 sess = tf.Session()
@@ -125,7 +117,7 @@ plt.ion()
 plt.show()
 
 curIndex = 0
-for epoch in range(800000):
+for epoch in range(80000):
     if(curIndex + batch_size*time > xCount*num_clusters):
         random.shuffle(inpu)
         curIndex = 0
